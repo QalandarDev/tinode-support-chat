@@ -104,10 +104,10 @@ do
     fi
 
     env GOOS="${plat}" GOARCH="${arc}" go build \
-      -ldflags "-s -w -X main.buildstamp=1234" -tags "${buildtag}" \
+      -ldflags "-s -w -X main.buildstamp=1234" -buildvcs=false -tags "${buildtag}" \
       -o ./releases/demo/tinode${ext} ./server > /dev/null
     env GOOS="${plat}" GOARCH="${arc}" go build \
-      -ldflags "-s -w" -tags "${buildtag}" -o ./releases/demo/init-db${ext} ./tinode-db > /dev/null
+      -ldflags "-s -w" -buildvcs=false -tags "${buildtag}" -o ./releases/demo/init-db${ext} ./tinode-db > /dev/null
 
     # Build archive. All platforms but Windows use tar for archiving. Windows uses zip.
 #    if [ "$plat" = "windows" ]; then
