@@ -1,0 +1,19 @@
+
+
+stages:
+  - build
+
+build:
+  stage: build
+  only:
+    - develop
+  tags:
+    - help-desk
+  script: 
+    - pwd
+    - whoami
+    - git checkout develop
+    - git pull
+    - ls -la
+    - docker compose  up -d --build
+
