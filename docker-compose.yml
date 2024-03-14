@@ -1,0 +1,31 @@
+services:
+
+  postgres:
+    image: postgres:14-alpine
+    networks:
+      - tinode_net
+    container_name: tinode_db
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      retries: 5
+      start_period: 0s
+  tinode:
+    build: .
+    container_name: tinode_go
+    networks:
+      - tinode_net
+    ports:
+      - 6060:6060
+    volumes:
+      - ./:/go/src/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+networks:
+  tinode_net:
+    driver: bridge
