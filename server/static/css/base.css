@@ -3050,9 +3050,7 @@ ul.phone-country-selector span.country {
 }
 
 @media (min-width: 1440px) {
-    #app-container {
-        max-width: 114rem
-    }
+
 }
 
 @media (max-width: 960px) {
