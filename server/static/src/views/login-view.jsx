@@ -46,50 +46,59 @@ export default class LoginView extends React.Component {
     }
 
     return (
-      <form id="login-form" onSubmit={this.handleSubmit}>
-        <FormattedMessage id="login_prompt" defaultMessage="Login"
-          description="Placeholer for username/login">
-        {
-          (login_prompt) => <input type="text" id="inputLogin"
-            placeholder={login_prompt}
-            autoComplete="username"
-            autoCorrect="off"
-            autoCapitalize="none"
-            value={this.state.login}
-            onChange={this.handleLoginChange}
-            required autoFocus />
-        }
-        </FormattedMessage>
-        <FormattedMessage id="password_prompt" defaultMessage="Password"
-          description="Placeholder/prompt for entering password">
-        {
-          (password_prompt) => <VisiblePassword type="password" id="inputPassword"
-            placeholder={password_prompt}
-            autoComplete="current-password"
-            value={this.state.password}
-            onChange={this.handlePasswordChange}
-            required={true} />
-        }
-        </FormattedMessage>
-        <div className="panel-form-row">
-          <CheckBox id="save-token" name="save-token" checked={this.state.saveToken}
-            onChange={this.handleToggleSaveToken} />
-          <label htmlFor="save-token">&nbsp;
-            <FormattedMessage id="stay_logged_in" defaultMessage="Stay logged in"
-              description="Label for a checkbox" />
-          </label>
-          <a href="#reset">
-            <FormattedMessage id="forgot_password_link" defaultMessage="Forgot password?"
-              description="Link to Reset password form" />
-          </a>
+        <div>
+          <form id="login-form" onSubmit={this.handleSubmit}>
+            <FormattedMessage id="login_prompt" defaultMessage="Login"
+                              description="Placeholer for username/login">
+              {
+                (login_prompt) => <input type="text" id="inputLogin"
+                                         placeholder={login_prompt}
+                                         autoComplete="username"
+                                         autoCorrect="off"
+                                         autoCapitalize="none"
+                                         value={this.state.login}
+                                         onChange={this.handleLoginChange}
+                                         required autoFocus/>
+              }
+            </FormattedMessage>
+            <FormattedMessage id="password_prompt" defaultMessage="Password"
+                              description="Placeholder/prompt for entering password">
+              {
+                (password_prompt) => <VisiblePassword type="password" id="inputPassword"
+                                                      placeholder={password_prompt}
+                                                      autoComplete="current-password"
+                                                      value={this.state.password}
+                                                      onChange={this.handlePasswordChange}
+                                                      required={true}/>
+              }
+            </FormattedMessage>
+            <div className="panel-form-row">
+              <CheckBox id="save-token" name="save-token" checked={this.state.saveToken}
+                        onChange={this.handleToggleSaveToken}/>
+              <label htmlFor="save-token">&nbsp;
+                <FormattedMessage id="stay_logged_in" defaultMessage="Stay logged in"
+                                  description="Label for a checkbox"/>
+              </label>
+              <a href="#reset">
+                <FormattedMessage id="forgot_password_link" defaultMessage="Forgot password?"
+                                  description="Link to Reset password form"/>
+              </a>
+            </div>
+            <div className="dialog-buttons">
+              <button className={submitClasses} type="submit">
+                <FormattedMessage id="button_sign_in" defaultMessage="Sign in"
+                                  description="Button [Sign In]"/>
+              </button>
+            </div>
+          </form>
+
+
+          {/*<a href="#" onClick={(e) => {*/}
+          {/*  e.preventDefault();*/}
+          {/*  this.props.onSignUp();*/}
+          {/*}}><i className="material-icons">person_add</i></a>*/}
+
         </div>
-        <div className="dialog-buttons">
-          <button className={submitClasses} type="submit">
-            <FormattedMessage id="button_sign_in" defaultMessage="Sign in"
-              description="Button [Sign In]" />
-          </button>
-        </div>
-      </form>
     );
   }
 };

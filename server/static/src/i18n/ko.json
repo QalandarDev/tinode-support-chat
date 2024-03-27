@@ -930,7 +930,7 @@
   },
   "push_init_failed": {
     "translation": "푸시알림을초기화하지못했습니다",
-    "defaultMessage": "Failed to initialize push notifications",
+    "defaultMessage": "Error",
     "description": "Error message when push notifications have failed to initialize.",
     "missing": false,
     "obsolete": false
