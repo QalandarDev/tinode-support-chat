@@ -936,8 +936,8 @@
     "obsolete": false
   },
   "push_init_failed": {
-    "translation": "Failed to initialize push notifications",
-    "defaultMessage": "Failed to initialize push notifications",
+    "translation": "Error",
+    "defaultMessage": "Error",
     "description": "Error message when push notifications have failed to initialize.",
     "missing": false,
     "obsolete": false

@@ -21,60 +21,67 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
 /* harmony import */ var _lib_strformat__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../lib/strformat */ "./src/lib/strformat.js");
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+// Audio recorder widget.
+
+
+
+
+// Workaround for https://bugs.chromium.org/p/chromium/issues/detail?id=642012
+// It adds duration and SeekHead to the webm record.
 
 
 
 
 
-
-
+// FFT resolution.
 const BUFFER_SIZE = 256;
+// Make canvas bigger than the element size to reduce blurring.
 const CANVAS_UPSCALING = 2.0;
+// Thickness of a visualization bar.
 const LINE_WIDTH = 3 * CANVAS_UPSCALING;
+// Spacing between two visualization bars.
 const SPACING = 2 * CANVAS_UPSCALING;
+// Duration represented by one visualization bar.
 const MILLIS_PER_BAR = 100;
+// Color of histogram bars
 const BAR_COLOR = '#BBBD';
+// Vertical scaling for visualization bars.
 const BAR_SCALE = 64.0;
+// Number of bars in preview.
 const VISUALIZATION_BARS = 96;
+// Maximum number of samples per bar.
 const MAX_SAMPLES_PER_BAR = 10;
+
+// Default recording format (FF, Chrome except on iOS).
 const DEFAULT_AUDIO_MIME_TYPE = 'audio/webm';
+// Safari supports only mp4 as audio recording format.
 const SAFARI_AUDIO_MIME_TYPE = 'audio/mp4';
 const AUDIO_MIME_TYPES = [DEFAULT_AUDIO_MIME_TYPE, SAFARI_AUDIO_MIME_TYPE, ''];
 const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
   icon_title_delete: {
-    id: "icon_title_delete",
-    defaultMessage: [{
-      "type": 0,
-      "value": "Delete recording"
-    }]
+    id: 'icon_title_delete',
+    defaultMessage: 'Delete recording',
+    description: 'Icon tool tip for deleting recorded audio'
   },
   icon_title_pause: {
-    id: "icon_title_pause",
-    defaultMessage: [{
-      "type": 0,
-      "value": "Pause playback"
-    }]
+    id: 'icon_title_pause',
+    defaultMessage: 'Pause playback',
+    description: 'Icon tool tip for pausing audio playback'
   },
   icon_title_resume: {
-    id: "icon_title_resume",
-    defaultMessage: [{
-      "type": 0,
-      "value": "Resume playback"
-    }]
+    id: 'icon_title_resume',
+    defaultMessage: 'Resume playback',
+    description: 'Icon tool tip for resuming audio playback'
   },
   icon_title_send: {
-    id: "icon_title_send",
-    defaultMessage: [{
-      "type": 0,
-      "value": "Send message"
-    }]
+    id: 'icon_title_send',
+    defaultMessage: 'Send message',
+    description: 'Icon tool tip for sending a message'
   },
   failed_to_init_audio: {
-    id: "failed_to_init_audio",
-    defaultMessage: [{
-      "type": 0,
-      "value": "Failed to initialize audio recording"
-    }]
+    id: 'failed_to_init_audio',
+    defaultMessage: 'Failed to initialize audio recording',
+    description: 'Error message when audio is not available'
   }
 });
 class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
@@ -101,7 +108,9 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
     this.durationMillis = 0;
     this.startedOn = null;
     this.viewBuffer = [];
-    this.canvasRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.canvasRef = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+
+    // Timestamp for sending "recording" notifications.
     this.recordingTimestamp = 0;
   }
   componentDidMount() {
@@ -111,6 +120,8 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
     this.audioInput = null;
     this.analyser = null;
     this.audioChunks = [];
+
+    // Start recorder right away.
     try {
       navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -126,12 +137,16 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
       this.cleanUp();
     }
   }
+
+  // Draw amplitude of sound.
   visualize() {
     this.initCanvas();
     const pcmData = new Uint8Array(this.analyser.frequencyBinCount);
     const width = this.canvasWidth;
     const height = this.canvasHeight;
+    // Number of bars.
     const viewLength = width / (LINE_WIDTH + SPACING) | 0;
+    // Duration of audio which fits onto the screen.
     const viewDuration = MILLIS_PER_BAR * viewLength;
     this.canvasContext.lineWidth = LINE_WIDTH;
     this.canvasContext.strokeStyle = BAR_COLOR;
@@ -144,9 +159,12 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
       }
       window.requestAnimationFrame(drawFrame);
       const duration = this.durationMillis + (Date.now() - this.startedOn);
+      // Update record length timer.
       this.setState({
         duration: (0,_lib_strformat__WEBPACK_IMPORTED_MODULE_5__.secondsToTime)(duration / 1000)
       });
+
+      // Check if record is too long.
       if (duration > _config_js__WEBPACK_IMPORTED_MODULE_6__.MAX_DURATION) {
         this.startedOn = null;
         this.mediaRecorder.pause();
@@ -157,25 +175,38 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
           duration: (0,_lib_strformat__WEBPACK_IMPORTED_MODULE_5__.secondsToTime)(this.durationMillis / 1000)
         });
       }
+
+      // Draw histogram.
+
+      // Get current waveform and calculate its amplitude.
       this.analyser.getByteTimeDomainData(pcmData);
       let amp = 0.0;
       for (const amplitude of pcmData) {
         amp += (amplitude - 127) ** 2;
       }
+
+      // Sum the amplitude.
       volume += Math.sqrt(amp / pcmData.length);
       countPerBar++;
       let barCount = duration / MILLIS_PER_BAR | 0;
+      // Shift of the histogram along x-axis to make scrolling smooth. No need to shift if recording is too short.
       const dx = viewDuration > duration ? 0 : (duration - MILLIS_PER_BAR * barCount) / MILLIS_PER_BAR * (LINE_WIDTH + SPACING);
       if (prevBarCount != barCount) {
         prevBarCount = barCount;
+        // Add new amplitude visualization bar.
         this.viewBuffer.push(volume / countPerBar);
         volume = 0.0;
         countPerBar = 0;
         if (this.viewBuffer.length > viewLength) {
+          // Keep at most 'viewLength' amplitude bars.
           this.viewBuffer.shift();
         }
       }
+
+      // Clear canvas.
       this.canvasContext.clearRect(0, 0, width, height);
+
+      // Draw amplitude bars.
       this.canvasContext.beginPath();
       for (let i = 0; i < this.viewBuffer.length; i++) {
         let x = i * (LINE_WIDTH + SPACING) - dx;
@@ -183,7 +214,10 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
         this.canvasContext.moveTo(x, (height - y) * 0.5);
         this.canvasContext.lineTo(x, (height + y) * 0.5);
       }
+      // Actually draw the bars on canvas.
       this.canvasContext.stroke();
+
+      // Send notification, if needed.
       const now = new Date().getTime();
       if (now - this.recordingTimestamp > _config_js__WEBPACK_IMPORTED_MODULE_6__.KEYPRESS_DELAY) {
         this.props.onRecordingProgress();
@@ -231,6 +265,7 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
       this.durationMillis += Date.now() - this.startedOn;
       this.startedOn = null;
     }
+    // Stop recording and return data.
     if (this.mediaRecorder) {
       this.mediaRecorder.stop();
     }
@@ -240,6 +275,7 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
     this.canvasRef.current.height = this.canvasRef.current.offsetHeight * CANVAS_UPSCALING;
     this.canvasContext = this.canvasRef.current.getContext('2d');
     this.canvasContext.lineCap = 'round';
+    // To reduce line blurring.
     this.canvasContext.translate(0.5, 0.5);
     this.canvasWidth = this.canvasRef.current.width;
     this.canvasHeight = this.canvasRef.current.height;
@@ -261,6 +297,8 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
       this.props.onError(this.props.intl.formatMessage(messages.failed_to_init_audio));
       return;
     }
+
+    // The following code is needed for visualization.
     this.audioContext = new AudioContext();
     this.audioInput = this.audioContext.createMediaStreamSource(stream);
     if (!this.audioInput) {
@@ -299,11 +337,14 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
     this.props.onRecordingProgress();
     this.recordingTimestamp = this.startedOn;
   }
+
+  // Obtain data in a form sutable for sending or playing back.
   getRecording(mimeType) {
     mimeType = mimeType || DEFAULT_AUDIO_MIME_TYPE;
     let blob = new Blob(this.audioChunks, {
       type: mimeType
     });
+    // If duration is valid, apply fix for Chrome's WebM duration bug.
     const result = mimeType == DEFAULT_AUDIO_MIME_TYPE ? webm_duration_fix__WEBPACK_IMPORTED_MODULE_3___default()(blob, mimeType) : Promise.resolve(blob);
     return result.then(fixedBlob => {
       blob = fixedBlob;
@@ -313,10 +354,15 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
       preview: (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_4__.intArrayToBase64)(preview)
     }));
   }
+
+  // Preview must be calculated at the source: Chrome does not allow background AudioContext.
   createPreview(audio) {
     const data = audio.getChannelData(0);
+    // Number of amplitude bars in preview.
     const viewLength = Math.min(data.length, VISUALIZATION_BARS);
+    // The number of samples in each bar.
     const totalSPB = data.length / viewLength | 0;
+    // Distance between samples: we are going to take just a fracton of samples.
     const samplingRate = Math.max(1, totalSPB / MAX_SAMPLES_PER_BAR | 0);
     let buffer = [];
     let max = -1;
@@ -331,6 +377,7 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
       buffer.push(val);
       max = Math.max(max, val);
     }
+    // Normalize amplitude to 0..100.
     if (max > 0) {
       buffer = buffer.map(a => 100 * a / max | 0);
     }
@@ -347,40 +394,40 @@ class AudioRecorder extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCo
       formatMessage
     } = this.props.intl;
     const resumeClass = 'material-icons ' + (this.state.enabled ? 'red' : 'gray');
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "audio"
-    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
       onClick: this.handleDelete,
       title: formatMessage(messages.icon_title_delete)
-    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons gray"
-    }, "delete_outline")), this.state.recording ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("canvas", {
+    }, "delete_outline")), this.state.recording ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("canvas", {
       ref: this.canvasRef
-    }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_audio_player_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    }) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_audio_player_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
       src: this.state.blobUrl,
       preview: this.state.preview,
       duration: this.durationMillis,
       short: true
-    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "duration"
-    }, this.state.duration), this.state.recording ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    }, this.state.duration), this.state.recording ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
       onClick: this.handlePause,
       title: formatMessage(messages.icon_title_pause)
-    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons"
-    }, "pause_circle_outline")) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    }, "pause_circle_outline")) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
       onClick: this.handleResume,
       title: formatMessage(messages.icon_title_resume)
-    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: resumeClass
-    }, "radio_button_checked")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    }, "radio_button_checked")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
       onClick: this.handleDone,
       title: formatMessage(messages.icon_title_send)
-    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons"
     }, "send")));
   }

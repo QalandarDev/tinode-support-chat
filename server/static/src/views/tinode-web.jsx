@@ -47,7 +47,7 @@ const messages = defineMessages({
   },
   push_init_failed: {
     id: 'push_init_failed',
-    defaultMessage: 'Failed to initialize push notifications',
+    defaultMessage: 'Error',
     description: 'Error message when push notifications have failed to initialize.'
   },
   invalid_security_token: {
@@ -369,7 +369,7 @@ class TinodeWeb extends React.Component {
   static tnSetup(serverAddress, secureConnection, transport, locale, persistentCache, onSetupCompleted) {
     const tinode = new Tinode({appName: APP_NAME, host: serverAddress, apiKey: API_KEY, transport: transport,
       secure: secureConnection, persist: persistentCache}, onSetupCompleted);
-    tinode.setHumanLanguage(locale);
+    tinode.setHumanLanguage('ru');
     tinode.enableLogging(LOGGING_ENABLED, true);
     return tinode;
   }
@@ -430,33 +430,34 @@ class TinodeWeb extends React.Component {
 
   // Google's FCM API is idiotic.
   static requestFCMToken(fcm, sw) {
-    return firebaseGetToken(fcm, {
-      serviceWorkerRegistration: sw,
-      vapidKey: FIREBASE_INIT.messagingVapidKey
-    }).then(token => {
-      if (token) {
-        return token;
-      } else if (typeof Notification != 'undefined') {
-        // Try to request permissions.
-        return Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            return firebaseGetToken(fcm, {
-              serviceWorkerRegistration: reg,
-              vapidKey: FIREBASE_INIT.messagingVapidKey
-            }).then(token => {
-              if (token) {
-                return token;
-              } else {
-                throw new Error("Failed to initialize notifications");
-              }
-            });
-          } else {
-            throw new Error("No permission to send notifications: " + permission);
-          }
-        });
-      }
-      throw new Error("Notifications are not supported");
-    });
+    return false;
+    // return firebaseGetToken(fcm, {
+    //   serviceWorkerRegistration: sw,
+    //   vapidKey: FIREBASE_INIT.messagingVapidKey
+    // }).then(token => {
+    //   if (token) {
+    //     return token;
+    //   } else if (typeof Notification != 'undefined') {
+    //     // Try to request permissions.
+    //     return Notification.requestPermission().then(permission => {
+    //       if (permission === 'granted') {
+    //         return firebaseGetToken(fcm, {
+    //           serviceWorkerRegistration: reg,
+    //           vapidKey: FIREBASE_INIT.messagingVapidKey
+    //         }).then(token => {
+    //           if (token) {
+    //             return token;
+    //           } else {
+    //             throw new Error("Failed to initialize notifications");
+    //           }
+    //         });
+    //       } else {
+    //         throw new Error("No permission to send notifications: " + permission);
+    //       }
+    //     });
+    //   }
+    //   throw new Error("Notifications are not supported");
+    // });
   }
 
   handleResize() {

@@ -937,7 +937,7 @@
   },
   "push_init_failed": {
     "translation": "การแจ้งเตือนล้มเหลว",
-    "defaultMessage": "Failed to initialize push notifications",
+    "defaultMessage": "Error",
     "description": "Error message when push notifications have failed to initialize.",
     "missing": false,
     "obsolete": false

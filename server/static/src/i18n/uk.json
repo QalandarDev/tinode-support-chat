@@ -930,7 +930,7 @@
   },
   "push_init_failed": {
     "translation": "Помилка ініціалізації пуш сповіщень",
-    "defaultMessage": "Failed to initialize push notifications",
+    "defaultMessage": "Error",
     "description": "Error message when push notifications have failed to initialize.",
     "missing": false,
     "obsolete": false
