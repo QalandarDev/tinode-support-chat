@@ -769,7 +769,7 @@
     "description": "Placeholder for editing 'private'"
   },
   "push_init_failed": {
-    "defaultMessage": "Failed to initialize push notifications",
+    "defaultMessage": "Error",
     "description": "Error message when push notifications have failed to initialize."
   },
   "reconnect_countdown": {

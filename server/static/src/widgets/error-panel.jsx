@@ -33,20 +33,25 @@ export default class ErrorPanel extends React.PureComponent {
     const level = icons[this.props.level] || '';
     const className = 'info-box ' + level;
     return (
-      <div className={className}>
-        <div className="icon"><i className="material-icons">{level}</i></div>
-        <span>
-          {this.props.text}
-          {this.props.action ?
-            <>
-              &nbsp;&#32;<a href="#"
-                style={{ whiteSpace: 'nowrap' }}
-                onClick={(e) => {e.preventDefault(); this.props.action();}}>
-                {this.props.actionText}
-              </a>
-            </>
-          : null}
-        </span>
+      <div className={className + ' ' + this.props.class}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+        }}>
+            <div className="icon"><i className="material-icons">{level}</i></div>
+            <span>
+              {this.props.text}
+              {this.props.action ?
+                <>
+                  &nbsp;&#32;<a href="#"
+                    style={{ whiteSpace: 'nowrap' }}
+                    onClick={(e) => {e.preventDefault(); this.props.action();}}>
+                    {this.props.actionText}
+                  </a>
+                </>
+              : null}
+            </span>
+        </div>
         <div className="cancel"><MenuCancel onCancel={this.hide} /></div>
       </div>
     );

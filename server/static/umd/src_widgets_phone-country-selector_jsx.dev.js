@@ -17,6 +17,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _dcodes_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../dcodes.json */ "./src/dcodes.json");
 /* harmony import */ var _lib_strformat__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/strformat */ "./src/lib/strformat.js");
+// Selector for country dialing code.
+
 
 
 
@@ -56,7 +58,7 @@ class PhoneCountrySelector extends (react__WEBPACK_IMPORTED_MODULE_0___default()
     const selected = this.props.selected || 'US';
     this.countries.forEach((c, idx) => {
       const style = c.code == selected ? 'selected ' : '';
-      countries.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      countries.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
         className: style,
         key: idx,
         ref: ref => {
@@ -65,20 +67,20 @@ class PhoneCountrySelector extends (react__WEBPACK_IMPORTED_MODULE_0___default()
           }
         },
         onClick: _ => this.props.onSubmit(c.code, c.dial)
-      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
         className: "country-flag"
-      }, c.flag), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      }, c.flag), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
         className: "country"
-      }, "\xA0", c.name), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      }, "\xA0", c.name), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
         className: "dial-code"
       }, "\xA0+", c.dial)));
     });
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "scrollable-panel",
       style: {
         height: '30rem'
       }
-    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
       className: "phone-country-selector"
     }, countries));
   }
