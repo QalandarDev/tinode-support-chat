@@ -7729,7 +7729,7 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
     this.handleCredAdd = this.handleCredAdd.bind(this);
     this.handleCredDelete = this.handleCredDelete.bind(this);
     this.handleCredConfirm = this.handleCredConfirm.bind(this);
-    this.initFCMessaging = this.initFCMessaging.bind(this);
+    // this.initFCMessaging = this.initFCMessaging.bind(this);
     this.toggleFCMToken = this.toggleFCMToken.bind(this);
     this.handlePushMessage = this.handlePushMessage.bind(this);
     this.handleSidepanelCancel = this.handleSidepanelCancel.bind(this);
@@ -7782,9 +7782,9 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
     return {
       connected: false,
       // Connected and subscribed to 'me'
-      ready: false,
+      ready: true,
       // Try to re-login on new connection.
-      autoLogin: false,
+      autoLogin: true,
       transport: settings.transport || null,
       serverAddress: settings.serverAddress || (0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_16__.detectServerAddress)(),
       secureConnection: settings.secureConnection === undefined ? (0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_16__.isSecureConnection)() : settings.secureConnection,
@@ -7807,8 +7807,8 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
       sidePanelAvatar: null,
       myTrustedBadges: [],
       loadSpinnerVisible: false,
-      login: '',
-      password: '',
+      login: 'dave',
+      password: 'dave123',
       persist: persist,
       myUserId: null,
       liveConnection: navigator.onLine,
@@ -7889,10 +7889,10 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
     }).then(_ => {
       // Initialize desktop alerts.
       if (this.state.desktopAlertsEnabled) {
-        this.initFCMessaging().catch(_ => {
-          // do nothing: handled earlier.
-          // catch needed to pervent unnecessary logging of error.
-        });
+        // this.initFCMessaging().catch(_ => {
+        //   // do nothing: handled earlier.
+        //   // catch needed to pervent unnecessary logging of error.
+        // });
       }
 
       // Read contacts from cache.
@@ -7948,6 +7948,7 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
       persist: persistentCache
     }, onSetupCompleted);
     tinode.setHumanLanguage('ru');
+    console.log('initialize');
     tinode.enableLogging(_config_js__WEBPACK_IMPORTED_MODULE_12__.LOGGING_ENABLED, true);
     return tinode;
   }
@@ -7971,54 +7972,45 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
         desktopAlerts: false
       });
     };
-    try {
-      this.fcm = (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.getMessaging)((0,firebase_app__WEBPACK_IMPORTED_MODULE_2__.initializeApp)(FIREBASE_INIT, _config_js__WEBPACK_IMPORTED_MODULE_12__.APP_NAME));
-      return navigator.serviceWorker.getRegistration('/service-worker.js').then(reg => {
-        return reg || navigator.serviceWorker.register('/service-worker.js').then(reg => {
-          this.checkForAppUpdate(reg);
-          return reg;
-        });
-      }).then(reg => {
-        // Pass locale and version config to the service worker.
-        (reg.active || reg.installing).postMessage(JSON.stringify({
-          locale: locale,
-          version: _version_js__WEBPACK_IMPORTED_MODULE_14__.PACKAGE_VERSION
-        }));
-        // Request token.
-        return TinodeWeb.requestFCMToken(this.fcm, reg);
-      }).then(token => {
-        const persist = _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_17__["default"].getObject('keep-logged-in');
-        if (token != this.state.firebaseToken) {
-          this.tinode.setDeviceToken(token);
-          if (persist) {
-            _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_17__["default"].setObject('firebase-token', token);
-          }
-        }
-        this.setState({
-          firebaseToken: token,
-          desktopAlerts: true
-        });
-        if (persist) {
-          _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_17__["default"].updateObject('settings', {
-            desktopAlerts: true
-          });
-        }
 
-        // Handhe FCM pushes
-        // (a) for channels always,
-        // (b) pushes when the app is in foreground but has no focus.
-        (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.onMessage)(this.fcm, payload => {
-          this.handlePushMessage(payload);
-        });
-      }).catch(err => {
-        // SW registration or FCM has failed :(
-        onError(err);
-        throw err;
-      });
-    } catch (err) {
-      onError(err);
-      return Promise.reject(err);
-    }
+    // try {
+    //   this.fcm = firebaseGetMessaging(firebaseInitApp(FIREBASE_INIT, APP_NAME));
+    //   return navigator.serviceWorker.getRegistration('/service-worker.js').then(reg => {
+    //     return reg || navigator.serviceWorker.register('/service-worker.js').then(reg => {
+    //       this.checkForAppUpdate(reg);
+    //       return reg;
+    //     });
+    //   }).then(reg => {
+    //     // Pass locale and version config to the service worker.
+    //     (reg.active || reg.installing).postMessage(JSON.stringify({locale: locale, version: PACKAGE_VERSION}));
+    //     // Request token.
+    //     return TinodeWeb.requestFCMToken(this.fcm, reg);
+    //   }).then(token => {
+    //     const persist = LocalStorageUtil.getObject('keep-logged-in');
+    //     if (token != this.state.firebaseToken) {
+    //       this.tinode.setDeviceToken(token);
+    //       if (persist) {
+    //         LocalStorageUtil.setObject('firebase-token', token);
+    //       }
+    //     }
+    //     this.setState({firebaseToken: token, desktopAlerts: true});
+    //     if (persist) {
+    //       LocalStorageUtil.updateObject('settings', {desktopAlerts: true});
+    //     }
+    //
+    //     // Handhe FCM pushes
+    //     // (a) for channels always,
+    //     // (b) pushes when the app is in foreground but has no focus.
+    //     firebaseOnMessage(this.fcm, payload => { this.handlePushMessage(payload); });
+    //   }).catch(err => {
+    //     // SW registration or FCM has failed :(
+    //     onError(err);
+    //     throw err;
+    //   });
+    // } catch (err) {
+    //   onError(err);
+    //   return Promise.reject(err);
+    // }
   }
 
   // Google's FCM API is idiotic.
@@ -8204,7 +8196,7 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
     if (this.state.desktopAlertsEnabled && !this.state.firebaseToken) {
       // Firefox and Safari: "The Notification permission may only be requested from inside a
       // short running user-generated event handler".
-      this.initFCMessaging();
+      // this.initFCMessaging();
     }
   }
 
@@ -8238,6 +8230,7 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
       // "reqCred":{"auth":["email"]}
       reqCredMethod: ((params.reqCred || {}).auth || [])[0] || 'email'
     });
+    console.log(this.state);
     if (this.state.autoLogin) {
       this.doLogin(this.state.login, this.state.password, null, {
         meth: this.state.credMethod,
@@ -8844,7 +8837,7 @@ class TinodeWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component)
         desktopAlerts: null
       });
       if (!this.state.firebaseToken) {
-        this.initFCMessaging();
+        // this.initFCMessaging();
       } else {
         this.setState({
           desktopAlerts: true

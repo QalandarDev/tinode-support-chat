@@ -3090,3 +3090,7 @@ ul.phone-country-selector span.country {
     color: #C9184A !important;
     font-weight: bold !important;
 }
+
+.flat-button {
+    color: #999 !important;
+}
