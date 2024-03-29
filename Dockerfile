@@ -18,6 +18,7 @@ WORKDIR $GOPATH/src/app
 # 6. run tinode -config ../../tinode.config
 #CMD ["bash", "-c","cd ./releases/demo && ./init-db --data=./data.json"]
 CMD ["bash", "-c","go mod vendor && \
+    rm -rf releases/demo/* &&  \
     ./build-all.sh && \
     cp tinode.conf releases/demo/tinode.conf && \
     cd ./releases/demo && \
