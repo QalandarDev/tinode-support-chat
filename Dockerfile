@@ -22,5 +22,6 @@ CMD ["bash", "-c","go mod vendor && \
     ./build-all.sh && \
     cp tinode.conf releases/demo/tinode.conf && \
     cd ./releases/demo && \
+    ./init-db -data=./data.json && \
     ./tinode -config ./tinode.conf "]
 
