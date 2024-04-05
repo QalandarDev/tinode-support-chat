@@ -27,5 +27,5 @@ RUN ./build-all.sh
 COPY tinode.conf /go/src/app/releases/demo/tinode.conf
 WORKDIR /go/src/app/releases/demo
 
-CMD ["bash", "-c","./init-db --data=./data.json && ./tinode -config ./tinode.conf "]
+CMD ["bash", "-c","./go/src/app/releases/demo/init-db --data=./go/src/app/releases/demo/data.json && ./go/src/app/releases/demo/tinode -config ./go/src/app/releases/demo/tinode.conf "]
 
