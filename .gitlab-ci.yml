@@ -15,5 +15,7 @@ build:
     - git checkout develop
     - git pull
     - ls -la
-    - docker compose  up
-
+    - docker compose  up -d --build
+  after_script:
+    - docker compose logs tinode_go || true
+    # Get again, `script` and `after_script` have different env blocks.
