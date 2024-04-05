@@ -658,8 +658,12 @@ func initTopicGrp(t *Topic) error {
 	t.delID = stopic.DelId
 
 	// Initialize channel for receiving session online updates.
+	//DEV change tags to in_progress
 	t.supd = make(chan *sessionUpdate, 32)
-
+	tags := normalizeTags([]string{"in_progress"})
+	now := types.TimeNow()
+	change := map[string]any{"Tags": tags, "UpdatedAt": now}
+	store.Topics.Update(t.name,change)
 	t.xoriginal = t.name // topic may have been loaded by a channel reader; make sure it's grpXXX, not chnXXX.
 
 	return nil
