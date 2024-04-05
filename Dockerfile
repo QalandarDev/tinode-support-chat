@@ -20,12 +20,12 @@ COPY . /go/src/app
 # 6. run tinode -config ../../tinode.config
 #CMD ["bash", "-c","cd ./releases/demo && ./init-db --data=./data.json"]
 #RUN go mod vendor
+
 RUN rm -rf releases/demo/*
 RUN ./build-all.sh
 
 COPY tinode.conf /go/src/app/releases/demo/tinode.conf
 WORKDIR /go/src/app/releases/demo
-
 
 CMD ["bash", "-c","./init-db --data=./data.json && ./tinode -config ./tinode.conf "]
 
