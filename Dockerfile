@@ -6,10 +6,12 @@ RUN apk update && apk upgrade && \
     apk add --no-cache bash git zip openssh
 
 
+
 ENV GOPATH=/go
 ENV GO111MODULE=on
 # Set the Current Working Directory inside the container
 WORKDIR $GOPATH/src/app
+COPY . /go/src/app
 # 1. go mod vendor (install all vendor packages)
 # 2. ./build-all.sh  build application
 # 3. cp tinode.conf releases/demo/tinode.conf
@@ -17,11 +19,13 @@ WORKDIR $GOPATH/src/app
 # 5. init-db --data=./data.json
 # 6. run tinode -config ../../tinode.config
 #CMD ["bash", "-c","cd ./releases/demo && ./init-db --data=./data.json"]
-CMD ["bash", "-c","go mod vendor && \
-    rm -rf releases/demo/* &&  \
-    ./build-all.sh && \
-    cp tinode.conf releases/demo/tinode.conf && \
-    cd ./releases/demo && \
-    ./init-db -data=./data.json && \
-    ./tinode -config ./tinode.conf "]
+#RUN go mod vendor
+RUN rm -rf releases/demo/*
+RUN ./build-all.sh
+
+COPY tinode.conf /go/src/app/releases/demo/tinode.conf
+WORKDIR /go/src/app/releases/demo
+
+
+CMD ["bash", "-c","./init-db --data=./data.json && ./tinode -config ./tinode.conf "]
 

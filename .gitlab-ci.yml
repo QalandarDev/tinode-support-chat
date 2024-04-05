@@ -1,7 +1,6 @@
-
-
 stages:
   - build
+  - stable
 
 build:
   stage: build
@@ -9,13 +8,18 @@ build:
     - develop
   tags:
     - help-desk
-  script: 
-    - pwd
-    - whoami
+  script:
     - git checkout develop
     - git pull
-    - ls -la
-    - docker compose  up -d --build
-  after_script:
-    - docker compose logs tinode_go || true
-    # Get again, `script` and `after_script` have different env blocks.
+    - DOCKER_BUILDKIT=0 docker build -t tinode_go .
+    # Other build-related commands can go here
+
+stable:
+  stage: stable
+  only:
+    - develop
+  tags:
+    - help-desk
+  script:
+    - docker-compose up -d --build
+    # Other commands to ensure stability can be added here
