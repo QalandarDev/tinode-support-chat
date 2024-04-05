@@ -15,5 +15,5 @@ build:
     - git checkout develop
     - git pull
     - ls -la
-    - docker compose  up -d --build
+    - docker compose  up --build
 
