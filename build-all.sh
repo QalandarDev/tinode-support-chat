@@ -24,14 +24,8 @@ done
 version=demo
 echo "Releasing $version"
 
-
-# Prepare directory for the new release
-rm -fR ./releases/${version}
-mkdir ./releases/${version}
-
 # Tar on Mac is inflexible about directories. Let's just copy release files to
 # one directory.
-rm -fR ./releases/demo
 mkdir -p ./releases/demo/templ
 
 # Copy templates and database initialization files
@@ -78,9 +72,6 @@ do
     ext=".exe"
   fi
 
-  # Remove possibly existing keygen from previous build.
-  rm -f ./releases/demo/keygen
-  rm -f ./releases/demo/keygen.exe
 
   # Keygen is database-independent
 #  env GOOS="${plat}" GOARCH="${arc}" go build -ldflags "-s -w" -o ./releases/demo/keygen${ext} ./keygen > /dev/null
@@ -89,11 +80,6 @@ do
   do
     echo "Building ${dbtag}-${plat}/${arc}..."
 
-    # Remove possibly existing binaries from previous build.
-    rm -f ./releases/demo/tinode
-    rm -f ./releases/demo/tinode.exe
-    rm -f ./releases/demo/init-db
-    rm -f ./releases/demo/init-db.exe
 
     # Build tinode server and database initializer for RethinkDb and MySQL.
     # For 'alldbs' tag, we compile in all available DB adapters.
