@@ -21,5 +21,6 @@ stable:
   tags:
     - help-desk
   script:
+    - docker compose down
     - docker compose up -d
     # Other commands to ensure stability can be added here
