@@ -621,6 +621,12 @@ func (s *Session) subscribe(msg *ClientComMessage) {
 		msg.RcptTo = globals.cluster.genLocalTopicName()
 	} else {
 		var resp *ServerComMessage
+		//DEV in progress
+		tags := normalizeTags([]string{"in_progress"})
+		now := types.TimeNow()
+		change := map[string]any{"Tags": tags, "UpdatedAt": now}
+		store.Topics.Update(msg.Original,change)
+		logs.Info.Println("DEV: topic in Progress",msg.Original)
 		msg.RcptTo, resp = s.expandTopicName(msg)
 		if resp != nil {
 			s.queueOut(resp)
@@ -1213,6 +1219,13 @@ func (s *Session) del(msg *ClientComMessage) {
 		}
 	} else if msg.MetaWhat == constMsgDelTopic {
 		// Deleting topic: for sessions attached or not attached, send request to hub first.
+		logs.Info.Println("DEV: DelTopic")
+		//DEV change tags to completed
+		now := types.TimeNow()
+		tags := normalizeTags([]string{"completed"})
+		change := map[string]any{"Tags": tags, "UpdatedAt": now}
+		store.Topics.Update(msg.Del.Topic,change)
+		logs.Info.Println("DEV: Topic completed...")
 		// Hub will forward to topic, if appropriate.
 		select {
 		case globals.hub.unreg <- &topicUnreg{
